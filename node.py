@@ -21,9 +21,8 @@ class Node:
 
         self.name = name
         self.id = str(uuid.uuid4())
-        self.vouches = []  # List to hold all vouches received by this Node
+        self.vouches = {}  # List to hold all vouches received by this Node
         self.clock = 0  # Clock value to assign to new vouches 
-        
 
     def vouch(self, recipient, vouch_type, comment):
         """
@@ -45,6 +44,7 @@ class Node:
         vouch = {
             "sender": self.serialized_public_key,
             "recipient": recipient.serialized_public_key,
+            "recipient_name": recipient.name,
             "vouch_type": vouch_type,
             "comment": comment,
             "timestamp": timestamp,
@@ -59,7 +59,7 @@ class Node:
         vouch['signature'] = base58.b58encode(signature).decode()
 
         # Add the vouch to our local vouch list
-        self.vouches.append(vouch)
+        self.vouches[recipient.name] = vouch
 
         # Return the new vouch message
         return vouch

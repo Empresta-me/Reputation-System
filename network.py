@@ -115,8 +115,7 @@ class Network:
                 continue
 
             print(id_order[idx], ':', '{:.1%}'.format(score))
-
-
+    
     def create_adjacency_matrix(self, id_order : list[int]) -> list[list[bool], bool]:
         """Creates and adjancency matrix to be used by the tree search"""
 
@@ -135,12 +134,17 @@ class Network:
                 if matrix[node_idx][other_idx] != 0:
                     continue
 
+                print(f"node_idx  {node_idx}")
+                print(f"other_idx  {other_idx}")
+
                 # If they vouch for each other...
                 if self.has_positive_connection(node_id, other_id):
+                    print("POSITIVE")
                     matrix[node_idx][other_idx] = 1
                     matrix[other_idx][node_idx] = 1
                 # If they vouch against each other...
                 elif self.has_negative_connection(node_id, other_id):
+                    print("NEGATIVE")
                     matrix[node_idx][other_idx] = -1
                     matrix[other_idx][node_idx] = -1
 
@@ -150,8 +154,9 @@ class Network:
             for j in range(size):
                 print('{:4}'.format(matrix[i][j]), end='')
             print()
-
+        
         return matrix
+
 
     def has_positive_connection(self, a_id, b_id) -> bool:
         """Returns whether a positive vouch connection exists between node A and B. A positive vouch connection is made if positive vouches are reciprocal."""
@@ -166,15 +171,16 @@ class Network:
         else:
             return False
 
+
         # Does A vouches for B...
         a_vouches_for = False
         if b_id in a.vouches.keys():
-            a_vouches_for = a.vouches[b_id]
+            a_vouches_for = a.vouches[b_id]["vouch_type"]
 
         # Does B vouches for A
         b_vouches_for = False
         if a_id in b.vouches.keys():
-            b_vouches_for = b.vouches[a_id]
+            b_vouches_for = b.vouches[a_id]["vouch_type"]
 
         # Positive connections are made if A and B vouch for each other
         return a_vouches_for and b_vouches_for
@@ -195,12 +201,12 @@ class Network:
         # Does A vouches for B...
         a_vouches_for = True
         if b_id in a.vouches.keys():
-            a_vouches_for = a.vouches[b_id]
+            a_vouches_for = a.vouches[b_id]["vouch_type"]
 
         # Does B vouches for A
         b_vouches_for = True
         if a_id in b.vouches.keys():
-            b_vouches_for = b.vouches[a_id]
+            b_vouches_for = b.vouches[a_id]["vouch_type"]
 
         # Negative vouch connections are made if at least one of them vouches against the other_id
         return not (a_vouches_for and b_vouches_for)
